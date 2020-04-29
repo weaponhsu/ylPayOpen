@@ -1,0 +1,25 @@
+{
+    "name": "weaponhsu/yl-pay-open",
+    "description": "宥理第三方支付sdk",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "weaponhsu",
+            "email": "huangxu4328@163.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "ylPay\\": "src/"
+        }
+    }
+}
