@@ -13,6 +13,29 @@ use ylPay\core\ylPayException;
 class Pay extends BaseClient
 {
     /**
+     * wap支付
+     * @return string
+     * @throws ylPayException
+     */
+    public function alipayTradeWapPay() {
+        // 添加公共参数
+        $params = [
+            'app_id' => $this->app->app_id,
+            'method' => 'alipay.trade.wap.pay',
+            'format' => 'json',
+            'timestamp' => date("Y-m-d H:i:s"),
+        ];
+        // 合并参数
+        $this->app->params = array_merge($this->app->params, $params);
+
+        // 签名
+        $string_to_be_signed = $this->getSignContent();
+        $this->app->params['sign'] = $this->sign($string_to_be_signed);
+
+        return 'https://openapi.alipay.com/gateway.do?' . http_build_query($this->app->params);
+    }
+
+    /**
      * 支付宝app支付
      * @return string
      * @throws ylPayException
