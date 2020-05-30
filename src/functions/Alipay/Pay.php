@@ -24,6 +24,7 @@ class Pay extends BaseClient
             'method' => 'alipay.trade.wap.pay',
             'format' => 'json',
             'timestamp' => date("Y-m-d H:i:s"),
+            'charset' => 'UTF-8'
         ];
         // 合并参数
         $this->app->params = array_merge($this->app->params, $params);
@@ -47,6 +48,7 @@ class Pay extends BaseClient
             'method' => 'alipay.trade.app.pay',
             'format' => 'json',
             'timestamp' => date("Y-m-d H:i:s"),
+            'charset' => 'UTF-8'
         ];
         // 合并参数
         $this->app->params = array_merge($this->app->params, $params);
