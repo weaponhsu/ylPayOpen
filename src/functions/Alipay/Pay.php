@@ -33,7 +33,7 @@ class Pay extends BaseClient
         $string_to_be_signed = $this->getSignContent();
         $this->app->params['sign'] = $this->sign($string_to_be_signed);
 
-        return 'https://openapi.alipay.com/gateway.do?' . http_build_query($this->app->params);
+        return $this->app->base_url . '?' . http_build_query($this->app->params);
     }
 
     /**
