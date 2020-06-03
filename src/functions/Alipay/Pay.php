@@ -76,8 +76,8 @@ class Pay extends BaseClient
 
         // 验签
         $string_to_be_signed = $this->getSignContent();
-//        if (false === $this->verify($this->app->sign, $string_to_be_signed, $this->app->alipay_rsa_public_key_path))
-//            throw new ylPayException("签验失败", 400);
+        if (false === $this->verify($this->app->sign, $string_to_be_signed, $this->app->alipay_rsa_public_key_path, $this->app->sign))
+            throw new ylPayException("签验失败", 400);
 
         return $this->app->params;
     }
