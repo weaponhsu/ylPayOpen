@@ -33,6 +33,13 @@ class ContainerBase extends Container
 //    public $alipay_sdk = "alipay-sdk-php-20200415";
 //    public $alipay_charset = 'utf-8';
 
+    public $alipay_transfer_rsa_private_key = '';
+    public $alipay_transfer_rsa_public_key = '';
+    public $alipay_app_cert = '';
+    public $alipay_transfer_cert_sn = '';
+    public $alipay_transer_root_cert_sn = '';
+    public $alipay_root_cert_content = '';
+
 
     public $app_secret = '';
 
@@ -124,5 +131,84 @@ class ContainerBase extends Container
     public function setAlipaySellerId($alipay_seller_id)
     {
         $this->alipay_seller_id = $alipay_seller_id;
+    }
+
+
+    /* ------------------ 资金类接口所需的方法 ----------------------- */
+    protected function array2string($array)
+    {
+        $string = [];
+        if ($array && is_array($array)) {
+            foreach ($array as $key => $value) {
+                $string[] = $key . '=' . $value;
+            }
+        }
+        return implode(',', $string);
+    }
+
+    /**
+     * 从证书中提取公钥
+     * @param $cert
+     * @return mixed
+     */
+    public function setTransferPublicKey($certPath)
+    {
+        $cert = file_get_contents($certPath);
+        $pkey = openssl_pkey_get_public($cert);
+        $keyData = openssl_pkey_get_details($pkey);
+        $public_key = str_replace('-----BEGIN PUBLIC KEY-----', '', $keyData['key']);
+        $this->alipay_rsa_public_key = $this->alipay_transfer_cert_sn = trim(str_replace('-----END PUBLIC KEY-----', '', $public_key));
+    }
+
+    /**
+     * 设置应用公钥
+     * @param string $alipay_app_cert
+     */
+    public function setAlipayAppCert($alipay_app_cert)
+    {
+        $cert = file_get_contents($alipay_app_cert);
+        $ssl = openssl_x509_parse($cert);
+        $this->alipay_app_cert = md5($this->array2string(array_reverse($ssl['issuer'])) . $ssl['serialNumber']);
+    }
+
+    /**
+     * 设置根证书
+     * @param string $alipay_transer_root_cert_sn
+     */
+    public function setAlipayTranserRootCertSn($alipay_transer_root_cert_sn)
+    {
+        $cert = file_get_contents($alipay_transer_root_cert_sn);
+        $this->alipay_root_cert_content = $cert;
+        $array = explode("-----END CERTIFICATE-----", $cert);
+        $this->alipay_transer_root_cert_sn = null;
+        for ($i = 0; $i < count($array) - 1; $i++) {
+            $ssl[$i] = openssl_x509_parse($array[$i] . "-----END CERTIFICATE-----");
+            if(strpos($ssl[$i]['serialNumber'],'0x') === 0){
+                $ssl[$i]['serialNumber'] = $this->hex2dec($ssl[$i]['serialNumber']);
+            }
+            if ($ssl[$i]['signatureTypeLN'] == "sha1WithRSAEncryption" || $ssl[$i]['signatureTypeLN'] == "sha256WithRSAEncryption") {
+                if ($this->alipay_transer_root_cert_sn == null) {
+                    $this->alipay_transer_root_cert_sn = md5($this->array2string(array_reverse($ssl[$i]['issuer'])) . $ssl[$i]['serialNumber']);
+                } else {
+
+                    $this->alipay_transer_root_cert_sn = $this->alipay_transer_root_cert_sn . "_" . md5($this->array2string(array_reverse($ssl[$i]['issuer'])) . $ssl[$i]['serialNumber']);
+                }
+            }
+        }
+    }
+
+    /**
+     * 0x转高精度数字
+     * @param $hex
+     * @return int|string
+     */
+    protected function hex2dec($hex)
+    {
+        $dec = 0;
+        $len = strlen($hex);
+        for ($i = 1; $i <= $len; $i++) {
+            $dec = bcadd($dec, bcmul(strval(hexdec($hex[$i - 1])), bcpow('16', strval($len - $i))));
+        }
+        return round($dec,0);
     }
 }

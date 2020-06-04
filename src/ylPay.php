@@ -6,6 +6,7 @@ namespace ylPay;
 
 use ylPay\core\ContainerBase;
 use ylPay\provider\AlipayProvider;
+use ylPay\provider\AlipayTransferProvider;
 
 class ylPay extends ContainerBase
 {
@@ -16,5 +17,6 @@ class ylPay extends ContainerBase
 
     protected $provider = [
         AlipayProvider::class,
+        AlipayTransferProvider::class
     ];
 }
