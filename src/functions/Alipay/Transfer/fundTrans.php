@@ -58,6 +58,73 @@ class fundTrans extends AliPayBaseClient
     }
 
     /**
+     * 查询转账状态
+     * @return mixed
+     * @throws ylPayException
+     */
+    public function alipayFundTransCommonQuery() {
+        // 添加公共参数
+        $params = [
+            'app_id' => $this->app->app_id,
+            'method' => 'alipay.fund.trans.common.query',
+            'format' => 'json',
+            'timestamp' => date("Y-m-d H:i:s"),
+            'charset' => 'UTF-8',
+            'app_cert_sn' => $this->app->alipay_app_cert,
+            'alipay_root_cert_sn' => $this->app->alipay_transer_root_cert_sn
+        ];
+        // 合并参数
+        $this->app->params = array_merge($this->app->params, $params);
+
+        // 签名
+        $string_to_be_signed = $this->getSignContent($this->app->params);
+        $this->app->params['sign'] = $this->sign($string_to_be_signed);
+
+        $resp = $this->post();
+
+        $res = json_decode($resp, true);
+
+        if ($res['alipay_fund_trans_common_query_response']['code'] !== '10000')
+            throw new ylPayException($res['alipay_fund_trans_common_query_response']['sub_msg'], 400);
+
+        return $res['alipay_fund_trans_common_query_response'];
+    }
+
+    /**
+     * 查询账号余额
+     * @return mixed
+     * @throws ylPayException
+     */
+    public function alipayFundAccountQuery() {
+        // 添加公共参数
+        $params = [
+            'app_id' => $this->app->app_id,
+            'method' => 'alipay.fund.account.query',
+            'format' => 'json',
+            'timestamp' => date("Y-m-d H:i:s"),
+            'charset' => 'UTF-8',
+            'app_cert_sn' => $this->app->alipay_app_cert,
+            'alipay_root_cert_sn' => $this->app->alipay_transer_root_cert_sn,
+            'sign_type' => 'RSA2'
+        ];
+        // 合并参数
+        $this->app->params = array_merge($this->app->params, $params);
+
+        // 签名
+        $string_to_be_signed = $this->getSignContent($this->app->params);
+        $this->app->params['sign'] = $this->sign($string_to_be_signed);
+
+        $resp = $this->post();
+
+        $res = json_decode($resp, true);
+
+        if ($res['alipay_fund_account_query_response']['code'] !== '10000')
+            throw new ylPayException($res['alipay_fund_account_query_response']['sub_msg'], 400);
+
+        return $res['alipay_fund_account_query_response']['available_amount'];
+    }
+
+    /**
      * 异步回调 校验app_id+校验seller_id+验签
      * @return mixed
      * @throws ylPayException
