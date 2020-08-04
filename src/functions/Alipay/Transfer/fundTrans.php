@@ -22,7 +22,7 @@ class fundTrans extends AliPayBaseClient
             'format' => 'json',
             'timestamp' => date("Y-m-d H:i:s"),
             'charset' => 'UTF-8',
-            'app_cert_sn' => $this->app->alipay_transfer_cert_sn,
+            'app_cert_sn' => $this->app->alipay_app_cert,
             'alipay_root_cert_sn' => $this->app->alipay_transer_root_cert_sn
         ];
         // 合并参数

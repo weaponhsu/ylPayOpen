@@ -154,17 +154,16 @@ class ContainerBase extends Container
     public function setTransferPublicKey($certPath)
     {
         $cert = file_get_contents($certPath);
-        $pkey = openssl_pkey_get_public($cert);
-        $keyData = openssl_pkey_get_details($pkey);
-        $public_key = str_replace('-----BEGIN PUBLIC KEY-----', '', $keyData['key']);
-        $this->alipay_rsa_public_key = $this->alipay_transfer_cert_sn = trim(str_replace('-----END PUBLIC KEY-----', '', $public_key));
+        $ssl = openssl_x509_parse($cert);
+        $this->alipay_transfer_cert_sn = md5(self::array2string(array_reverse($ssl['issuer'])) . $ssl['serialNumber']);
     }
 
     /**
      * 设置应用公钥
-     * @param string $alipay_app_cert
+     * @param $alipay_app_cert
+     * @return string|string[]
      */
-    public function setAlipayAppCert($alipay_app_cert)
+    public function setAlipayAppCertSn($alipay_app_cert)
     {
         $cert = file_get_contents($alipay_app_cert);
         $ssl = openssl_x509_parse($cert);
