@@ -23,7 +23,7 @@ class fundTrans extends AliPayBaseClient
             'timestamp' => date("Y-m-d H:i:s"),
             'charset' => 'UTF-8',
             'app_cert_sn' => $this->app->alipay_app_cert,
-            'alipay_root_cert_sn' => $this->app->alipay_transer_root_cert_sn
+            'alipay_root_cert_sn' => $this->app->alipay_transfer_root_cert_sn
         ];
         // 合并参数
         $this->app->params = array_merge($this->app->params, $params);
@@ -71,7 +71,7 @@ class fundTrans extends AliPayBaseClient
             'timestamp' => date("Y-m-d H:i:s"),
             'charset' => 'UTF-8',
             'app_cert_sn' => $this->app->alipay_app_cert,
-            'alipay_root_cert_sn' => $this->app->alipay_transer_root_cert_sn
+            'alipay_root_cert_sn' => $this->app->alipay_transfer_root_cert_sn
         ];
         // 合并参数
         $this->app->params = array_merge($this->app->params, $params);
@@ -104,7 +104,7 @@ class fundTrans extends AliPayBaseClient
             'timestamp' => date("Y-m-d H:i:s"),
             'charset' => 'UTF-8',
             'app_cert_sn' => $this->app->alipay_app_cert,
-            'alipay_root_cert_sn' => $this->app->alipay_transer_root_cert_sn,
+            'alipay_root_cert_sn' => $this->app->alipay_transfer_root_cert_sn,
             'sign_type' => 'RSA2'
         ];
         // 合并参数

@@ -14,6 +14,8 @@ class ContainerBase extends Container
 
     public $params = [];
 
+    public $headers = [];
+
     public $base_url;
 
     public $sign = '';
@@ -37,13 +39,45 @@ class ContainerBase extends Container
     public $alipay_transfer_rsa_public_key = '';
     public $alipay_app_cert = '';
     public $alipay_transfer_cert_sn = '';
-    public $alipay_transer_root_cert_sn = '';
+    public $alipay_transfer_root_cert_sn = '';
     public $alipay_root_cert_content = '';
 
 
     public $app_secret = '';
 
     public $access_token = '';
+
+    /**
+     * paypal 参数
+     * @var string
+     */
+    public $paypal_client = "";
+    public $paypal_secret = "";
+
+    /**
+     * @param string $paypal_client
+     */
+    public function setPaypalClient(string $paypal_client)
+    {
+        $this->paypal_client = $paypal_client;
+    }
+
+    /**
+     * @param string $paypal_secret
+     */
+    public function setPaypalSecret(string $paypal_secret)
+    {
+        $this->paypal_secret = $paypal_secret;
+    }
+
+
+    /**
+     * @param string $access_token
+     */
+    public function setAccessToken(string $access_token)
+    {
+        $this->access_token = $access_token;
+    }
 
     public function __construct($params =array())
     {
@@ -172,25 +206,25 @@ class ContainerBase extends Container
 
     /**
      * 设置根证书
-     * @param string $alipay_transer_root_cert_sn
+     * @param string $alipay_transfer_root_cert_sn
      */
-    public function setAlipayTranserRootCertSn($alipay_transer_root_cert_sn)
+    public function setAlipayTransferRootCertSn($alipay_transfer_root_cert_sn)
     {
-        $cert = file_get_contents($alipay_transer_root_cert_sn);
+        $cert = file_get_contents($alipay_transfer_root_cert_sn);
         $this->alipay_root_cert_content = $cert;
         $array = explode("-----END CERTIFICATE-----", $cert);
-        $this->alipay_transer_root_cert_sn = null;
+        $this->alipay_transfer_root_cert_sn = null;
         for ($i = 0; $i < count($array) - 1; $i++) {
             $ssl[$i] = openssl_x509_parse($array[$i] . "-----END CERTIFICATE-----");
             if(strpos($ssl[$i]['serialNumber'],'0x') === 0){
                 $ssl[$i]['serialNumber'] = $this->hex2dec($ssl[$i]['serialNumber']);
             }
             if ($ssl[$i]['signatureTypeLN'] == "sha1WithRSAEncryption" || $ssl[$i]['signatureTypeLN'] == "sha256WithRSAEncryption") {
-                if ($this->alipay_transer_root_cert_sn == null) {
-                    $this->alipay_transer_root_cert_sn = md5($this->array2string(array_reverse($ssl[$i]['issuer'])) . $ssl[$i]['serialNumber']);
+                if ($this->alipay_transfer_root_cert_sn == null) {
+                    $this->alipay_transfer_root_cert_sn = md5($this->array2string(array_reverse($ssl[$i]['issuer'])) . $ssl[$i]['serialNumber']);
                 } else {
 
-                    $this->alipay_transer_root_cert_sn = $this->alipay_transer_root_cert_sn . "_" . md5($this->array2string(array_reverse($ssl[$i]['issuer'])) . $ssl[$i]['serialNumber']);
+                    $this->alipay_transfer_root_cert_sn = $this->alipay_transfer_root_cert_sn . "_" . md5($this->array2string(array_reverse($ssl[$i]['issuer'])) . $ssl[$i]['serialNumber']);
                 }
             }
         }
